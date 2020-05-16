@@ -2,6 +2,7 @@
 
 #include <string>
 #include <engine/gameplay/entities/Character.hpp>
+#include <engine/gameplay/EntityContext.hpp>
 
 namespace engine
 {
@@ -12,7 +13,7 @@ namespace engine
 			class Enemy : public Character
 			{
 			public:
-				Enemy(const std::string &archetypeName);
+				Enemy(EntityContext& entityContext, const std::string &archetypeName);
 
 				virtual void update() override;
 

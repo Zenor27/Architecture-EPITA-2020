@@ -2,11 +2,7 @@
 
 #include <string>
 #include <vector>
-
-namespace sf
-{
-	class Shape;
-}
+#include <SFML/Graphics.hpp>
 
 namespace engine
 {

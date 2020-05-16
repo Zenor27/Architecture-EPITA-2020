@@ -12,7 +12,13 @@
 
 namespace engine
 {
-	Engine *Engine::instance = nullptr;
+	// Instanciate all managers
+	Engine::Engine()
+		: _gameplayManager{ _graphicsManager, _inputManager, _physicsManager }
+		, _graphicsManager(*this, _gameplayManager)
+	{
+
+	}
 
 	void Engine::loadConfiguration()
 	{
@@ -37,22 +43,24 @@ namespace engine
 	{
 		running = true;
 
-		gameplay::Manager::getInstance().loadMap(startMap);
+		_gameplayManager.loadMap(startMap);
 
 		sf::Clock clock;
 		while (running)
 		{
 			deltaTime = clock.restart().asSeconds();
 
-			physics::Manager::getInstance().update();
-			gameplay::Manager::getInstance().update();
-			graphics::Manager::getInstance().update();
+			_inputManager.clear();
 
-			graphics::Manager::getInstance().clear();
+			_physicsManager.update();
+			_graphicsManager.update();
+			_gameplayManager.update();
 
-			gameplay::Manager::getInstance().draw();
+			_graphicsManager.clear();
 
-			graphics::Manager::getInstance().display();
+			_gameplayManager.draw();
+
+			_graphicsManager.display();
 		}
 	}
 
@@ -65,12 +73,32 @@ namespace engine
 	{
 		running = false;
 	}
-
-	Engine &Engine::getInstance()
+	void Engine::onEvent(const sf::Event& event)
 	{
-		if (!instance)
-			instance = new Engine();
+		switch (event.type)
+		{
+		case sf::Event::Closed:
+			this->exit();
+			break;
 
-		return *instance;
+		case sf::Event::LostFocus:
+			_inputManager.setHasFocus(false);
+			break;
+
+		case sf::Event::GainedFocus:
+			_inputManager.setHasFocus(true);
+			break;
+
+		case sf::Event::KeyPressed:
+			_inputManager.onKeyPressed(event.key);
+			break;
+
+		case sf::Event::KeyReleased:
+			_inputManager.onKeyReleased(event.key);
+			break;
+
+		default:
+			break;
+		}
 	}
 }

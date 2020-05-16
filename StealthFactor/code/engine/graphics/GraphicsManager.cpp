@@ -12,16 +12,15 @@ namespace engine
 {
 	namespace graphics
 	{
-		Manager *Manager::instance = nullptr;
-
-		Manager::Manager()
+		Manager::Manager(EventListener& eventListener, View& view)
+			: _eventListener(eventListener)
+			, _view(view)
 		{
+			// Create view
 			window.create(sf::VideoMode{ (unsigned int)WINDOW_WIDTH, (unsigned int)WINDOW_HEIGHT }, "Stealth Factor");
-
 			window.setVerticalSyncEnabled(true);
-
-			sf::View view(sf::Vector2f{ 0.f, 0.f }, sf::Vector2f{ (float)WINDOW_WIDTH, (float)WINDOW_HEIGHT });
-			window.setView(view);
+			sf::View sfView(sf::Vector2f{ 0.f, 0.f }, sf::Vector2f{ (float)WINDOW_WIDTH, (float)WINDOW_HEIGHT });
+			window.setView(sfView);
 		}
 
 		Manager::~Manager()
@@ -31,28 +30,10 @@ namespace engine
 
 		void Manager::update()
 		{
-			input::Manager::getInstance().clear();
-
 			sf::Event event;
 			while (window.pollEvent(event))
 			{
-				switch (event.type)
-				{
-				case sf::Event::Closed:
-					Engine::getInstance().exit();
-					break;
-
-				case sf::Event::KeyPressed:
-					input::Manager::getInstance().onKeyPressed(event.key);
-					break;
-
-				case sf::Event::KeyReleased:
-					input::Manager::getInstance().onKeyReleased(event.key);
-					break;
-
-				default:
-					break;
-				}
+				_eventListener.onEvent(event);
 			}
 		}
 
@@ -60,11 +41,11 @@ namespace engine
 		{
 			window.clear(sf::Color::Black);
 
-			sf::View view{ gameplay::Manager::getInstance().getViewCenter(), sf::Vector2f{(float)WINDOW_WIDTH, (float)WINDOW_HEIGHT} };
-			window.setView(view);
+			sf::View sfView{ _view.getViewCenter(), sf::Vector2f{(float)WINDOW_WIDTH, (float)WINDOW_HEIGHT} };
+			window.setView(sfView);
 		}
 
-		void Manager::draw(const ShapeList &shapeList, const sf::Transform &transform)
+		void Manager::draw(const ShapeList& shapeList, const sf::Transform& transform)
 		{
 			sf::RenderStates renderStates{ transform };
 			for (auto shape : shapeList.getShapes())
@@ -76,19 +57,6 @@ namespace engine
 		void Manager::display()
 		{
 			window.display();
-		}
-
-		bool Manager::hasFocus() const
-		{
-			return window.hasFocus();
-		}
-
-		Manager &Manager::getInstance()
-		{
-			if (!instance)
-				instance = new Manager();
-
-			return *instance;
 		}
 	}
 }

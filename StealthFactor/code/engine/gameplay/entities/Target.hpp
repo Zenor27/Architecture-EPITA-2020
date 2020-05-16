@@ -3,6 +3,7 @@
 #include <ode/collision.h>
 #include <engine/graphics/ShapeList.hpp>
 #include <engine/gameplay/Entity.hpp>
+#include <engine/gameplay/EntityContext.hpp>
 
 namespace engine
 {
@@ -13,7 +14,7 @@ namespace engine
 			class Target : public Entity
 			{
 			public:
-				Target();
+				Target(EntityContext& entityContext);
 				~Target();
 
 				virtual void update() override;

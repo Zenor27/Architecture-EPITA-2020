@@ -9,9 +9,10 @@ namespace engine
 	{
 		namespace entities
 		{
-			Character::Character()
+			Character::Character(EntityContext& entityContext)
+				: Entity{ entityContext }
 			{
-				collisionGeomId = dCreateBox(physics::Manager::getInstance().getSpaceId(), 0.f, 0.f, 0.f);
+				collisionGeomId = dCreateBox(_entityContext.physicsManager.getSpaceId(), 0.f, 0.f, 0.f);
 				dGeomSetData(collisionGeomId, this);
 			}
 
@@ -22,7 +23,7 @@ namespace engine
 
 			void Character::draw()
 			{
-				graphics::Manager::getInstance().draw(shapeList, getTransform());
+				_entityContext.graphicsManager.draw(shapeList, getTransform());
 			}
 		}
 	}

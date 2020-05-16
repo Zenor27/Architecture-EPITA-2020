@@ -4,12 +4,17 @@ namespace engine
 {
 	namespace gameplay
 	{
-		const sf::Vector2f & Entity::getPosition() const
+		Entity::Entity(EntityContext& entityContext)
+			: _entityContext{ entityContext }
+		{
+		}
+
+		const sf::Vector2f& Entity::getPosition() const
 		{
 			return _position;
 		}
 
-		void Entity::setPosition(const sf::Vector2f &newPosition)
+		void Entity::setPosition(const sf::Vector2f& newPosition)
 		{
 			_position = newPosition;
 			updateTransform();
@@ -26,7 +31,7 @@ namespace engine
 			updateTransform();
 		}
 
-		const sf::Transform & Entity::getTransform() const
+		const sf::Transform& Entity::getTransform() const
 		{
 			return _transform;
 		}

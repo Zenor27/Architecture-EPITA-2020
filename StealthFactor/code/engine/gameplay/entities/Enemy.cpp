@@ -12,14 +12,15 @@ namespace engine
 	{
 		namespace entities
 		{
-			Enemy::Enemy(const std::string &archetypeName)
+			Enemy::Enemy(EntityContext& entityContext, const std::string &archetypeName)
+				: Character(entityContext)
 			{
 				loadArchetype(archetypeName);
 			}
 
 			void Enemy::update()
 			{
-				auto &player = gameplay::Manager::getInstance().getPlayer();
+				auto& player = _entityContext.entityManager.getPlayer();
 				if (player.hasJustMoved())
 				{
 					auto &playerPosition = player.getPosition();
@@ -36,7 +37,7 @@ namespace engine
 						}
 						else
 						{
-							gameplay::Manager::getInstance().gameOver();
+							_entityContext.entityManager.gameOver();
 						}
 					}
 					else

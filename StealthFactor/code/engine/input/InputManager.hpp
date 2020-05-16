@@ -21,14 +21,13 @@ namespace engine
 			bool isKeyJustReleased(sf::Keyboard::Key key) const;
 
 			void clear();
-			void onKeyPressed(const sf::Event::KeyEvent &event);
-			void onKeyReleased(const sf::Event::KeyEvent &event);
+			void onKeyPressed(const sf::Event::KeyEvent& event);
+			void onKeyReleased(const sf::Event::KeyEvent& event);
 
-			static Manager &getInstance();
+			void setHasFocus(bool hasFocus);
 
 		private:
-			static Manager *instance;
-
+			bool _hasFocus{ true };
 			std::set<sf::Keyboard::Key> justPressedKeys;
 			std::set<sf::Keyboard::Key> justReleasedKeys;
 		};

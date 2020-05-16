@@ -10,11 +10,12 @@ namespace engine
 	{
 		namespace entities
 		{
-			Target::Target()
+			Target::Target(EntityContext& entityContext)
+				: Entity(entityContext)
 			{
 				shapeList.load("target");
 
-				collisionGeomId = dCreateBox(physics::Manager::getInstance().getSpaceId(), gameplay::Manager::CELL_SIZE * 0.9f, gameplay::Manager::CELL_SIZE * 0.9f, 1.f);
+				collisionGeomId = dCreateBox(_entityContext.physicsManager.getSpaceId(), gameplay::Manager::CELL_SIZE * 0.9f, gameplay::Manager::CELL_SIZE * 0.9f, 1.f);
 				dGeomSetData(collisionGeomId, this);
 			}
 
@@ -31,7 +32,7 @@ namespace engine
 
 			void Target::draw()
 			{
-				graphics::Manager::getInstance().draw(shapeList, getTransform());
+				_entityContext.graphicsManager.draw(shapeList, getTransform());
 			}
 		}
 	}
