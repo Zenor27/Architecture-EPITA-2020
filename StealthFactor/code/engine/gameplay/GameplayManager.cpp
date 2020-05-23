@@ -17,14 +17,14 @@ namespace engine
 	{
 		const float Manager::CELL_SIZE = 50.f;
 
-		Manager::Manager(graphics::Manager &graphicsManager, input::Manager &inputManager, physics::Manager &physicsManager)
+		Manager::Manager(graphics::Manager& graphicsManager, input::Manager& inputManager, physics::Manager& physicsManager)
 			: _context{ graphicsManager, inputManager, physicsManager, *this }
 		{
 		}
 
 		void Manager::update()
 		{
-			for (auto entity : _entities)
+			for (auto& entity : _entities)
 			{
 				entity->update();
 			}
@@ -39,18 +39,14 @@ namespace engine
 
 		void Manager::draw()
 		{
-			for (auto entity : _entities)
+			for (auto& entity : _entities)
 			{
 				entity->draw();
 			}
 		}
 
-		void Manager::loadMap(const std::string &mapName)
+		void Manager::loadMap(const std::string& mapName)
 		{
-			for (auto entity : _entities)
-			{
-				delete entity;
-			}
 			_entities.clear();
 
 			std::stringstream filename;
@@ -70,7 +66,7 @@ namespace engine
 				_columns = std::stoi(xmlMap.child_value("columns"));
 				assert(_columns >= 0);
 
-				for (auto &xmlElement : xmlMap.child("elements").children())
+				for (auto& xmlElement : xmlMap.child("elements").children())
 				{
 					if (!std::strcmp(xmlElement.name(), "enemy"))
 					{
@@ -82,10 +78,11 @@ namespace engine
 
 						std::string archetypeName = xmlElement.child_value("archetype");
 
-						auto entity = new entities::Enemy{ _context, archetypeName };
+						EntityUniquePtr entity{ new entities::Enemy{ _context, archetypeName } };
+
 						entity->setPosition(sf::Vector2f{ (column + 0.5f) * CELL_SIZE, (row + 0.5f) * CELL_SIZE });
 
-						_entities.insert(entity);
+						_entities.insert(std::move(entity));
 					}
 
 					if (!std::strcmp(xmlElement.name(), "player"))
@@ -96,11 +93,11 @@ namespace engine
 						int column = std::stoi(xmlElement.child_value("column"));
 						assert(column >= 0 && column < _columns);
 
-						auto entity = new entities::Player{ _context };
+						_playerEntity = new entities::Player{ _context };
+						EntityUniquePtr entity{ _playerEntity };
 						entity->setPosition(sf::Vector2f{ (column + 0.5f) * CELL_SIZE, (row + 0.5f) * CELL_SIZE });
 
-						_entities.insert(entity);
-						_playerEntity = entity;
+						_entities.insert(std::move(entity));
 					}
 
 					if (!std::strcmp(xmlElement.name(), "target"))
@@ -111,10 +108,10 @@ namespace engine
 						int column = std::stoi(xmlElement.child_value("column"));
 						assert(column >= 0 && column < _columns);
 
-						auto entity = new entities::Target{ _context };
+						EntityUniquePtr entity{ new entities::Target { _context } };
 						entity->setPosition(sf::Vector2f{ (column + 0.5f) * CELL_SIZE, (row + 0.5f) * CELL_SIZE });
 
-						_entities.insert(entity);
+						_entities.insert(std::move(entity));
 					}
 				}
 
@@ -147,7 +144,7 @@ namespace engine
 			}
 		}
 
-		const entities::Player &Manager::getPlayer() const
+		const entities::Player& Manager::getPlayer() const
 		{
 			assert(_playerEntity);
 			return *_playerEntity;

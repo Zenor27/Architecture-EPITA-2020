@@ -1,9 +1,11 @@
 #pragma once
 
 #include <set>
+#include <memory>
 #include <string>
 #include <SFML/System/Vector2.hpp>
 #include <engine/graphics/ViewProvider.hpp>
+#include <engine/gameplay/Entity.hpp>
 #include <engine/gameplay/EntityContext.hpp>
 #include <engine/gameplay/EntityListener.hpp>
 
@@ -41,7 +43,9 @@ namespace engine
 		private:
 			EntityContext _context;
 
-			std::set<Entity *> _entities;
+			using EntityUniquePtr = std::unique_ptr<Entity>;
+
+			std::set<EntityUniquePtr> _entities;
 			entities::Player *_playerEntity{};
 
 			// Map
