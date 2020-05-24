@@ -1,6 +1,7 @@
 #include "Character.hpp"
 
 #include <engine/gameplay/EntityContext.hpp>
+#include <engine/gameplay/GameplayManager.hpp>
 #include <engine/graphics/GraphicsManager.hpp>
 #include <engine/physics/PhysicsManager.hpp>
 
@@ -13,13 +14,12 @@ namespace engine
 			Character::Character(EntityContext &context)
 				: Entity{ context }
 			{
-				_collisionGeomId = dCreateBox(context.physicsManager.getSpaceId(), 0.f, 0.f, 0.f);
-				dGeomSetData(_collisionGeomId, this);
+				_collisionGeomId = _context.physicsManager.createCollisionBox(this, gameplay::Manager::CELL_SIZE * 0.9f, gameplay::Manager::CELL_SIZE * 0.9f);
 			}
 
 			Character::~Character()
 			{
-				dGeomDestroy(_collisionGeomId);
+				_context.physicsManager.destroyCollisionBox(_collisionGeomId);
 			}
 
 			void Character::draw()

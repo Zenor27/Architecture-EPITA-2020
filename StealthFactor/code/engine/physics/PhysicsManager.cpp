@@ -36,10 +36,19 @@ namespace engine
 			dSpaceCollide(_spaceId, &_frameCollisions, &Manager::nearCallback);
 		}
 
-		dSpaceID Manager::getSpaceId() const
+		dGeomID Manager::createCollisionBox(gameplay::Entity* entity, float width, float height)
 		{
-			return _spaceId;
+			auto box = dCreateBox(_spaceId, width, height, 1.f);
+			dGeomSetData(box, entity);
+			return box;
 		}
+
+		void Manager::destroyCollisionBox(dGeomID geomID)
+		{
+			dGeomDestroy(geomID);
+		}
+
+		
 
 		std::set<dGeomID> Manager::getCollisionsWith(dGeomID object) const
 		{

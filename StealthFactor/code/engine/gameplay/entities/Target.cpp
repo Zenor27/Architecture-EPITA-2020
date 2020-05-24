@@ -16,13 +16,12 @@ namespace engine
 			{
 				_shapeList.load("target");
 
-				_collisionGeomId = dCreateBox(context.physicsManager.getSpaceId(), gameplay::Manager::CELL_SIZE * 0.9f, gameplay::Manager::CELL_SIZE * 0.9f, 1.f);
-				dGeomSetData(_collisionGeomId, this);
+				_collisionGeomId = _context.physicsManager.createCollisionBox(this, gameplay::Manager::CELL_SIZE * 0.9f, gameplay::Manager::CELL_SIZE * 0.9f);
 			}
 
 			Target::~Target()
 			{
-				dGeomDestroy(_collisionGeomId);
+				_context.physicsManager.destroyCollisionBox(_collisionGeomId);
 			}
 
 			void Target::update()

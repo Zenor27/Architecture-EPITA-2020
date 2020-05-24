@@ -21,9 +21,6 @@ namespace engine
 				: Character{ context }
 			{
 				_shapeList.load("player");
-
-				_collisionGeomId = dCreateBox(context.physicsManager.getSpaceId(), gameplay::Manager::CELL_SIZE * 0.9f, gameplay::Manager::CELL_SIZE * 0.9f, 1.f);
-				dGeomSetData(_collisionGeomId, this);
 			}
 
 			void Player::update()

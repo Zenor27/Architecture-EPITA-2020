@@ -6,6 +6,11 @@
 
 namespace engine
 {
+	namespace gameplay
+	{
+		class Entity;
+	}
+
 	namespace physics
 	{
 		class Manager
@@ -26,7 +31,8 @@ namespace engine
 
 			void update();
 
-			dSpaceID getSpaceId() const;
+			dGeomID createCollisionBox(gameplay::Entity* entity, float width, float height);
+			void destroyCollisionBox(dGeomID geomID);
 
 			std::set<dGeomID> getCollisionsWith(dGeomID object) const;
 
@@ -34,7 +40,7 @@ namespace engine
 			dSpaceID _spaceId{};
 			Collisions _frameCollisions;
 
-			static void nearCallback(void *data, dGeomID o1, dGeomID o2);
+			static void nearCallback(void* data, dGeomID o1, dGeomID o2);
 		};
 	}
 }
