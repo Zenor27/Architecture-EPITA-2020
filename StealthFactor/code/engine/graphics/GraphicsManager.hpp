@@ -1,5 +1,8 @@
 #pragma once
 
+#include <memory>
+#include <set>
+#include <engine/graphics/ShapeList.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 
 namespace engine
@@ -22,12 +25,18 @@ namespace engine
 			void update();
 
 			void clear();
-			void draw(const ShapeList &shapeList, const sf::Transform &transform);
+			void draw();
 			void display();
+
+			ShapeList* createShapeList(const std::string& name);
+			void destroyShapeList(ShapeList* shapeList);
+			void setShapeListTransform(ShapeList* shapeList, sf::Transform transform);
 
 		private:
 			EventListener & _eventListener;
 			ViewProvider & _viewProvider;
+			using ShapeListPtr = std::unique_ptr<ShapeList>;
+			std::set<ShapeListPtr> _shapeLists;
 
 			sf::RenderWindow _window;
 

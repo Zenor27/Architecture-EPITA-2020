@@ -26,7 +26,6 @@ namespace engine
 			Manager(graphics::Manager &graphicsManager, input::Manager &inputManager, physics::Manager &physicsManager);
 
 			void update();
-			void draw();
 
 			void loadMap(const std::string &mapName);
 

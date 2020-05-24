@@ -34,7 +34,7 @@ namespace engine
 			dGeomID createCollisionBox(gameplay::Entity* entity, float width, float height);
 			void destroyCollisionBox(dGeomID geomID);
 
-			std::set<dGeomID> getCollisionsWith(dGeomID object) const;
+			std::set<gameplay::Entity*> getCollisionsWith(dGeomID object) const;
 
 		private:
 			dSpaceID _spaceId{};

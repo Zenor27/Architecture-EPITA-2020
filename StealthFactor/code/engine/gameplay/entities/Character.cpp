@@ -19,12 +19,16 @@ namespace engine
 
 			Character::~Character()
 			{
+				_context.graphicsManager.destroyShapeList(_shapeList);
 				_context.physicsManager.destroyCollisionBox(_collisionGeomId);
 			}
 
-			void Character::draw()
+			void Character::setTransform()
 			{
-				_context.graphicsManager.draw(_shapeList, getTransform());
+				_context.graphicsManager.setShapeListTransform(_shapeList, getTransform());
+
+				auto& position = getPosition();
+				dGeomSetPosition(_collisionGeomId, position.x, position.y, 0);
 			}
 		}
 	}

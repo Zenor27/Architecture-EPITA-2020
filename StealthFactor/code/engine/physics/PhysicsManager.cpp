@@ -50,23 +50,23 @@ namespace engine
 
 		
 
-		std::set<dGeomID> Manager::getCollisionsWith(dGeomID object) const
+		std::set<gameplay::Entity *> Manager::getCollisionsWith(dGeomID object) const
 		{
-			std::set<dGeomID> objectCollisions;
+			std::set<gameplay::Entity*> entityCollisions;
 
 			for (auto &collision : _frameCollisions)
 			{
 				if (collision.o1 == object)
 				{
-					objectCollisions.insert(collision.o2);
+					entityCollisions.insert(reinterpret_cast<gameplay::Entity*>(dGeomGetData(collision.o2)));
 				}
 				if (collision.o2 == object)
 				{
-					objectCollisions.insert(collision.o1);
+					entityCollisions.insert(reinterpret_cast<gameplay::Entity*>(dGeomGetData(collision.o1)));
 				}
 			}
 
-			return objectCollisions;
+			return entityCollisions;
 		}
 
 		void Manager::nearCallback(void *data, dGeomID o1, dGeomID o2)

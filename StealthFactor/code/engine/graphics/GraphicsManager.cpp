@@ -13,7 +13,7 @@ namespace engine
 {
 	namespace graphics
 	{
-		Manager::Manager(EventListener &eventListener, ViewProvider &viewProvider)
+		Manager::Manager(EventListener& eventListener, ViewProvider& viewProvider)
 			: _eventListener{ eventListener }
 			, _viewProvider{ viewProvider }
 		{
@@ -55,18 +55,48 @@ namespace engine
 			_window.setView(view);
 		}
 
-		void Manager::draw(const ShapeList &shapeList, const sf::Transform &transform)
+		void Manager::draw()
 		{
-			sf::RenderStates renderStates{ transform };
-			for (auto shape : shapeList.getShapes())
+			clear();
+
+			for (auto& shape : _shapeLists)
 			{
-				_window.draw(*shape, renderStates);
+				sf::RenderStates renderStates{ shape->getTransform() };
+				for (auto& sfShape : shape->getShapes())
+				{
+					_window.draw(*sfShape, renderStates);
+				}
 			}
+
+			_window.display();
 		}
 
 		void Manager::display()
 		{
 			_window.display();
+		}
+
+		ShapeList* Manager::createShapeList(const std::string& name)
+		{
+			ShapeList* shapeList = new ShapeList();
+			std::unique_ptr<ShapeList> shapeListUniquePtr{ shapeList };
+			shapeListUniquePtr->load(name);
+
+			_shapeLists.insert(std::move(shapeListUniquePtr));
+
+			return shapeList;
+		}
+		void Manager::destroyShapeList(ShapeList* shapeList)
+		{
+			auto iterator = std::find_if(std::begin(_shapeLists), std::end(_shapeLists), [shapeList](const ShapeListPtr& shapeListPtr)
+				{
+					return shapeListPtr.get() == shapeList;
+				});
+			_shapeLists.erase(iterator);
+		}
+		void Manager::setShapeListTransform(ShapeList* shapeList, sf::Transform transform)
+		{
+			shapeList->setTransform(transform);
 		}
 	}
 }

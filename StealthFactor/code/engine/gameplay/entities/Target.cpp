@@ -14,13 +14,14 @@ namespace engine
 			Target::Target(EntityContext &context)
 				: Entity{ context }
 			{
-				_shapeList.load("target");
+				_shapeList = context.graphicsManager.createShapeList("target");
 
 				_collisionGeomId = _context.physicsManager.createCollisionBox(this, gameplay::Manager::CELL_SIZE * 0.9f, gameplay::Manager::CELL_SIZE * 0.9f);
 			}
 
 			Target::~Target()
 			{
+				_context.graphicsManager.destroyShapeList(_shapeList);
 				_context.physicsManager.destroyCollisionBox(_collisionGeomId);
 			}
 
@@ -30,9 +31,9 @@ namespace engine
 				dGeomSetPosition(_collisionGeomId, position.x, position.y, 0);
 			}
 
-			void Target::draw()
+			void Target::setTransform()
 			{
-				_context.graphicsManager.draw(_shapeList, getTransform());
+				_context.graphicsManager.setShapeListTransform(_shapeList, getTransform());
 			}
 		}
 	}

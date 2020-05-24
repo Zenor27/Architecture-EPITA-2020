@@ -16,10 +16,10 @@ namespace engine
 				Character(EntityContext &context);
 				virtual ~Character();
 
-				virtual void draw() override;
+				void setTransform();
 
 			protected:
-				graphics::ShapeList _shapeList;
+				graphics::ShapeList* _shapeList;
 				dGeomID _collisionGeomId;
 
 				bool _isWalking{ false };

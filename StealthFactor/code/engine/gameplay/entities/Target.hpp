@@ -17,11 +17,10 @@ namespace engine
 				~Target();
 
 				virtual void update() override;
-
-				virtual void draw() override;
+				void setTransform();
 
 			private:
-				graphics::ShapeList _shapeList;
+				graphics::ShapeList* _shapeList;
 				dGeomID _collisionGeomId;
 			};
 		}

@@ -17,10 +17,10 @@ namespace engine
 	{
 		namespace entities
 		{
-			Player::Player(EntityContext &context)
+			Player::Player(EntityContext& context)
 				: Character{ context }
 			{
-				_shapeList.load("player");
+				_shapeList = _context.graphicsManager.createShapeList("player");
 			}
 
 			void Player::update()
@@ -62,14 +62,13 @@ namespace engine
 					setPosition(position);
 					setRotation(rotation);
 
-					dGeomSetPosition(_collisionGeomId, position.x, position.y, 0);
+					setTransform();
 				}
 
 				auto collisions = _context.physicsManager.getCollisionsWith(_collisionGeomId);
-				for (auto &geomId : collisions)
+				for (auto& entity : collisions)
 				{
-					auto entity = reinterpret_cast<Entity *>(dGeomGetData(geomId));
-					auto targetEntity = dynamic_cast<entities::Target *>(entity);
+					auto targetEntity = dynamic_cast<entities::Target*>(entity);
 					if (targetEntity)
 					{
 						_context.entityListener.loadNextMap();

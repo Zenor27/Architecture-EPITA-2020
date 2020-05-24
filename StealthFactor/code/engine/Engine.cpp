@@ -74,12 +74,7 @@ namespace engine
 			_physicsManager.update();
 			_graphicsManager.update();
 			_gameplayManager.update();
-
-			_graphicsManager.clear();
-
-			_gameplayManager.draw();
-
-			_graphicsManager.display();
+			_graphicsManager.draw();
 		}
 	}
 
