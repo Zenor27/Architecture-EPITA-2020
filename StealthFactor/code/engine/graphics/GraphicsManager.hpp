@@ -4,6 +4,7 @@
 #include <set>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <engine/graphics/ShapeListId.hpp>
+#include <engine/gameplay/components/Camera.hpp>
 
 namespace engine
 {
@@ -17,13 +18,16 @@ namespace engine
 		class Manager
 		{
 		public:
-			Manager(EventListener &eventListener, ViewProvider &viewProvider);
+			Manager(EventListener &eventListener);
 			~Manager();
 
 			bool setUp();
 			void tearDown();
 
 			void pollEvents();
+			
+			void setCamera(gameplay::components::Camera* camera);
+
 
 			ShapeListId createShapeListInstance(const std::string &name);
 			void destroyShapeListInstance(ShapeListId id);
@@ -36,7 +40,7 @@ namespace engine
 			using ShapeListInstancePtr = std::unique_ptr<ShapeListInstance>;
 
 			EventListener &_eventListener;
-			ViewProvider &_viewProvider;
+			gameplay::components::Camera* _camera;
 
 			sf::RenderWindow _window;
 

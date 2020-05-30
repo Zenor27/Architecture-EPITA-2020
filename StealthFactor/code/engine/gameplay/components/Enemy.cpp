@@ -3,33 +3,41 @@
 #include <iostream>
 #include <sstream>
 #include <pugixml/pugixml.hpp>
+#include <engine/gameplay/Entity.hpp>
 #include <engine/gameplay/EntityContext.hpp>
+#include <engine/gameplay/EntityListener.hpp>
 #include <engine/gameplay/GameplayManager.hpp>
-#include <engine/gameplay/entities/Player.hpp>
-#include <engine/graphics/GraphicsManager.hpp>
+#include <engine/gameplay/components/Player.hpp>
+#include <engine/gameplay/components/Transform.hpp>
+
 
 namespace engine
 {
 	namespace gameplay
 	{
-		namespace entities
+		namespace components
 		{
-			Enemy::Enemy(EntityContext &context, const std::string &archetypeName)
-				: Character{ context }
+			Enemy::Enemy(Entity& entity)
+				: Component{ entity }
 			{
-				loadArchetype(archetypeName);
 			}
 
 			void Enemy::update()
 			{
-				auto &player = _context.entityListener.getPlayer();
+				auto& entity = getEntity();
+				auto& context = entity.getEntityContext();
+
+				auto& player = context.entityListener.getPlayer();
 				if (player.hasJustMoved())
 				{
-					auto &playerPosition = player.getPosition();
-					auto &myPosition = getPosition();
+					auto& playerPosition = player.getEntity().getComponent<Transform>()->getPosition();
+					auto& myPosition = getEntity().getComponent<Transform>()->getPosition();
 
 					auto offset = myPosition - playerPosition;
-					offset /= gameplay::Manager::CELL_SIZE;
+
+					// FIXME: Wtf
+					const float CELL_SIZE = 50.f;
+					offset /= CELL_SIZE;
 					float distance2 = offset.x * offset.x + offset.y * offset.y;
 					if (distance2 <= _visionRadius * _visionRadius)
 					{
@@ -39,7 +47,7 @@ namespace engine
 						}
 						else
 						{
-							_context.entityListener.gameOver();
+							getEntity().getEntityContext().entityListener.gameOver();
 						}
 					}
 					else
@@ -49,7 +57,7 @@ namespace engine
 				}
 			}
 
-			void Enemy::loadArchetype(const std::string &archetypeName)
+			void Enemy::loadArchetype(const std::string& archetypeName)
 			{
 				std::stringstream filename;
 				filename << "archetypes/" << archetypeName << ".xml";
@@ -63,8 +71,6 @@ namespace engine
 					auto xmlArchetype = doc.first_child();
 
 					std::string shapeListName = xmlArchetype.child_value("shapelist");
-					_shapeListId = _context.graphicsManager.createShapeListInstance(shapeListName);
-					assert(_shapeListId);
 
 					_visionRadius = std::stof(xmlArchetype.child_value("vision_radius"));
 					assert(_visionRadius > 0.f);

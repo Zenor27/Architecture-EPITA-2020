@@ -1,20 +1,20 @@
 #pragma once
 
 #include <string>
-#include <engine/gameplay/entities/Character.hpp>
+#include <engine/gameplay/Component.hpp>
 
 namespace engine
 {
 	namespace gameplay
 	{
-		namespace entities
+		namespace components
 		{
-			class Enemy : public Character
+			class Enemy : public Component
 			{
 			public:
-				Enemy(EntityContext &context, const std::string &archetypeName);
+				Enemy(Entity& entity);
 
-				virtual void update() override;
+				void update() override;
 
 			private:
 				float _visionRadius{ 0 };

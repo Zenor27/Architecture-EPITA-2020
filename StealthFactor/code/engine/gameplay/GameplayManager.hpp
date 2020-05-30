@@ -13,12 +13,12 @@ namespace engine
 {
 	namespace gameplay
 	{
-		namespace entities
+		namespace components
 		{
 			class Player;
 		}
 
-		class Manager : public graphics::ViewProvider, public EntityListener
+		class Manager : public EntityListener
 		{
 		public:
 			Manager(graphics::Manager &graphicsManager, input::Manager &inputManager, physics::Manager &physicsManager);
@@ -33,10 +33,7 @@ namespace engine
 			// EntityListener
 			void gameOver() override;
 			void loadNextMap() override;
-			const entities::Player &getPlayer() const override;
-
-			// ViewProvider
-			sf::Vector2f getViewCenter() const override;
+			const components::Player &getPlayer() const override;
 
 			static const float CELL_SIZE;
 
@@ -46,7 +43,7 @@ namespace engine
 			EntityContext _context;
 
 			std::set<EntityPtr> _entities;
-			entities::Player *_playerEntity{};
+			components::Player *_playerEntity{};
 
 			// Map
 			std::string _currentMapName;

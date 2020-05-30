@@ -4,17 +4,16 @@
 #include <SFML/Window/Event.hpp>
 #include <engine/input/InputManager.hpp>
 #include <engine/graphics/ShapeListInstance.hpp>
-#include <engine/graphics/ViewProvider.hpp>
 #include <engine/gameplay/GameplayManager.hpp>
 #include <engine/Engine.hpp>
+#include <engine/gameplay/components/Camera.hpp>
 
 namespace engine
 {
 	namespace graphics
 	{
-		Manager::Manager(EventListener &eventListener, ViewProvider &viewProvider)
+		Manager::Manager(EventListener& eventListener)
 			: _eventListener{ eventListener }
-			, _viewProvider{ viewProvider }
 		{
 		}
 
@@ -52,7 +51,12 @@ namespace engine
 			}
 		}
 
-		ShapeListId Manager::createShapeListInstance(const std::string &name)
+		void Manager::setCamera(gameplay::components::Camera* camera)
+		{
+			_camera = camera;
+		}
+
+		ShapeListId Manager::createShapeListInstance(const std::string& name)
 		{
 			auto instance{ new ShapeListInstance() };
 			ShapeListInstancePtr instanceUPtr{ instance };
@@ -68,18 +72,18 @@ namespace engine
 
 		void Manager::destroyShapeListInstance(ShapeListId id)
 		{
-			auto it = std::find_if(std::begin(_shapeListInstances), std::end(_shapeListInstances), [id](const ShapeListInstancePtr &instance)
-			{
-				return instance.get() == id;
-			});
+			auto it = std::find_if(std::begin(_shapeListInstances), std::end(_shapeListInstances), [id](const ShapeListInstancePtr& instance)
+				{
+					return instance.get() == id;
+				});
 			assert(it != std::end(_shapeListInstances));
 			_shapeListInstances.erase(it);
 		}
 
-		void Manager::setShapeListInstanceTransform(ShapeListId id, const sf::Transform & transform)
+		void Manager::setShapeListInstanceTransform(ShapeListId id, const sf::Transform& transform)
 		{
 			// TODO Optimize (kd-tree...)
-			ShapeListInstance *instance = id;
+			ShapeListInstance* instance = id;
 			instance->transform = transform;
 		}
 
@@ -87,13 +91,13 @@ namespace engine
 		{
 			_window.clear(sf::Color::Black);
 
-			sf::View view{ _viewProvider.getViewCenter(), sf::Vector2f{(float)WINDOW_WIDTH, (float)WINDOW_HEIGHT} };
+			sf::View view{ _camera->getPosition() , sf::Vector2f{(float)WINDOW_WIDTH, (float)WINDOW_HEIGHT} };
 			_window.setView(view);
 
-			for (auto &instance : _shapeListInstances)
+			for (auto& instance : _shapeListInstances)
 			{
 				sf::RenderStates renderStates{ instance->transform };
-				for (auto &shape : instance->shapeList.getShapes())
+				for (auto& shape : instance->shapeList.getShapes())
 				{
 					_window.draw(*shape, renderStates);
 				}

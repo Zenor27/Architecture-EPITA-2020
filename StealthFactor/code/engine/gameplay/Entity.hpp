@@ -1,6 +1,9 @@
 #pragma once
 
-#include <SFML/Graphics/Transform.hpp>
+#include <algorithm>
+#include <set>
+#include <memory>
+#include <engine/gameplay/Component.hpp>
 
 namespace engine
 {
@@ -11,28 +14,48 @@ namespace engine
 		class Entity
 		{
 		public:
-			Entity(EntityContext &context);
+			Entity(EntityContext& context);
 			virtual ~Entity() = default;
 
-			virtual void update() = 0;
+			void update();
+			void onTransformChange();
 
-			const sf::Vector2f &getPosition() const;
-			void setPosition(const sf::Vector2f &newPosition);
+			EntityContext& getEntityContext() const;
 
-			float getRotation() const;
-			void setRotation(float newRotation);
+			template <typename COMPONENT>
+			void addComponent();
 
-			const sf::Transform &getTransform() const;
-
-		protected:
-			EntityContext & _context;
+			template <typename COMPONENT>
+			COMPONENT* getComponent() const;
 
 		private:
-			sf::Vector2f _position{};
-			float _rotation{ 0.f };
-			sf::Transform _transform;
+			using ComponentPtr = std::unique_ptr<Component>;
 
-			void updateTransform();
+			std::set<ComponentPtr> _components;
+			EntityContext& _context;
 		};
+
+
+		template<typename COMPONENT>
+		inline void Entity::addComponent()
+		{
+			auto componentPtr = std::make_unique<COMPONENT>(*this);
+			_components.insert(componentPtr);
+		}
+
+		template<typename COMPONENT>
+		inline COMPONENT* Entity::getComponent() const
+		{
+			auto begin = std::begin(_components);
+			auto end = std::end(_components);
+
+			auto iterator = std::find_if(begin, end, [](const ComponentPtr& c) {
+				return dynamic_cast<COMPONENT*>(c.get()) != nullptr;
+				});
+
+			if (iterator != end)
+				return reinterpret_cast<COMPONENT*>(iterator->get());
+			return nullptr;
+		}
 	}
 }

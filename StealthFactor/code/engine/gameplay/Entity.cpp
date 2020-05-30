@@ -1,46 +1,31 @@
 #include "Entity.hpp"
 
+#include <engine/gameplay/Component.hpp>
+
 namespace engine
 {
 	namespace gameplay
 	{
-		Entity::Entity(EntityContext &context)
+		Entity::Entity(EntityContext& context)
 			: _context{ context }
 		{
 		}
 
-		const sf::Vector2f &Entity::getPosition() const
+		void Entity::update()
 		{
-			return _position;
+			for (auto& c : _components)
+				c->update();
 		}
 
-		void Entity::setPosition(const sf::Vector2f &newPosition)
+		void Entity::onTransformChange()
 		{
-			_position = newPosition;
-			updateTransform();
+			for (auto& c : _components)
+				c->onTransformChange();
 		}
 
-		float Entity::getRotation() const
+		EntityContext& Entity::getEntityContext() const
 		{
-			return _rotation;
-		}
-
-		void Entity::setRotation(float newRotation)
-		{
-			_rotation = newRotation;
-			updateTransform();
-		}
-
-		const sf::Transform &Entity::getTransform() const
-		{
-			return _transform;
-		}
-
-		void Entity::updateTransform()
-		{
-			_transform = sf::Transform::Identity;
-			_transform.translate(_position);
-			_transform.rotate(_rotation);
+			return _context;
 		}
 	}
 }

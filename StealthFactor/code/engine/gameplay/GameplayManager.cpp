@@ -7,9 +7,11 @@
 #include <vector>
 #include <pugixml/pugixml.hpp>
 #include <engine/Engine.hpp>
-#include <engine/gameplay/entities/Enemy.hpp>
-#include <engine/gameplay/entities/Player.hpp>
-#include <engine/gameplay/entities/Target.hpp>
+#include <engine/gameplay/components/Enemy.hpp>
+#include <engine/gameplay/components/Player.hpp>
+#include <engine/gameplay/components/Target.hpp>
+#include <engine/gameplay/components/Transform.hpp>
+
 
 namespace engine
 {
@@ -67,8 +69,15 @@ namespace engine
 				_columns = std::stoi(xmlMap.child_value("columns"));
 				assert(_columns >= 0);
 
+				// FIXME: What to do here ?
+				std::unique_ptr<Entity> entity;
+
 				for (auto &xmlElement : xmlMap.child("elements").children())
 				{
+					entity.reset(new Entity{ _context });
+					entity->addComponent < components::Transform>();
+
+
 					if (!std::strcmp(xmlElement.name(), "enemy"))
 					{
 						int row = std::stoi(xmlElement.child_value("row"));
@@ -79,7 +88,7 @@ namespace engine
 
 						std::string archetypeName = xmlElement.child_value("archetype");
 
-						auto enemyEntity{ new entities::Enemy{ _context, archetypeName } };
+						auto enemyEntity{ new components::Enemy{ _context, archetypeName } };
 						EntityPtr entity{ enemyEntity };
 						entity->setPosition(sf::Vector2f{ (column + 0.5f) * CELL_SIZE, (row + 0.5f) * CELL_SIZE });
 						enemyEntity->propagateTransform();
@@ -95,7 +104,7 @@ namespace engine
 						int column = std::stoi(xmlElement.child_value("column"));
 						assert(column >= 0 && column < _columns);
 
-						_playerEntity = new entities::Player{ _context };
+						_playerEntity = new components::Player{ _context };
 						EntityPtr entity{ _playerEntity };
 						entity->setPosition(sf::Vector2f{ (column + 0.5f) * CELL_SIZE, (row + 0.5f) * CELL_SIZE });
 						_playerEntity->propagateTransform();
@@ -111,13 +120,15 @@ namespace engine
 						int column = std::stoi(xmlElement.child_value("column"));
 						assert(column >= 0 && column < _columns);
 
-						auto targetEntity = new entities::Target{ _context };
+						auto targetEntity = new components::Target{ _context };
 						EntityPtr entity{ targetEntity };
 						entity->setPosition(sf::Vector2f{ (column + 0.5f) * CELL_SIZE, (row + 0.5f) * CELL_SIZE });
 						targetEntity->propagateTransform();
 
 						_entities.insert(std::move(entity));
 					}
+
+					// FIXME: Should instanciate camera
 				}
 
 				_currentMapName = mapName;
@@ -149,15 +160,10 @@ namespace engine
 			}
 		}
 
-		const entities::Player &Manager::getPlayer() const
+		const components::Player &Manager::getPlayer() const
 		{
 			assert(_playerEntity);
 			return *_playerEntity;
-		}
-
-		sf::Vector2f Manager::getViewCenter() const
-		{
-			return sf::Vector2f{ _columns * (CELL_SIZE / 2.f), _rows * (CELL_SIZE / 2.f) };
 		}
 
 		void Manager::removeEntities()
