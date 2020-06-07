@@ -12,17 +12,19 @@
 #include <engine/gameplay/components/Renderer.hpp>
 #include <engine/gameplay/components/Target.hpp>
 #include <engine/gameplay/components/Transform.hpp>
+#include <engine/serializer/XMLSerializer.hpp>
+#include <engine\gameplay\Archetype.hpp>
 
 namespace engine
 {
 	namespace gameplay
 	{
-		Prefab::Prefab(const std::string &name)
+		Prefab::Prefab(const std::string& name)
 			: _name{ name }
 		{
 		}
 
-		std::unique_ptr<Entity> Prefab::instantiate(EntityContext &context) const
+		std::unique_ptr<Entity> Prefab::instantiate(EntityContext& context) const
 		{
 			std::unique_ptr<Entity> entity;
 
@@ -41,7 +43,7 @@ namespace engine
 
 				entity->addComponent<components::Transform>();
 
-				for (auto &xmlElement : xmlMap.child("components").children())
+				for (auto& xmlElement : xmlMap.child("components").children())
 				{
 					if (!std::strcmp(xmlElement.name(), "camera"))
 					{
@@ -50,7 +52,7 @@ namespace engine
 
 					else if (!std::strcmp(xmlElement.name(), "collision_box"))
 					{
-						auto &collisionBox = entity->addComponent<components::CollisionBox>();
+						auto& collisionBox = entity->addComponent<components::CollisionBox>();
 
 						float width = std::stof(xmlElement.child_value("width"));
 						float height = std::stof(xmlElement.child_value("height"));
@@ -60,11 +62,15 @@ namespace engine
 
 					else if (!std::strcmp(xmlElement.name(), "enemy"))
 					{
-						auto &enemy = entity->addComponent<components::Enemy>();
+						auto& enemy = entity->addComponent<components::Enemy>();
 
-						std::string archetype = xmlElement.child_value("archetype");
+						std::string archetypeName = xmlElement.child_value("archetype");
 
-						enemy.setArchetypeName(archetype);
+						serializer::XMLSerializer serializer{ archetypeName };
+
+						Archetype archetype;
+						archetype.load(serializer);
+						enemy.setArchetype(archetype);
 					}
 
 					else if (!std::strcmp(xmlElement.name(), "player"))
@@ -74,7 +80,7 @@ namespace engine
 
 					else if (!std::strcmp(xmlElement.name(), "renderer"))
 					{
-						auto &renderer = entity->addComponent<components::Renderer>();
+						auto& renderer = entity->addComponent<components::Renderer>();
 
 						std::string shapelist = xmlElement.child_value("shapelist");
 

@@ -24,6 +24,10 @@ namespace engine
 
 			void Enemy::update()
 			{
+				const std::string& _shapeListName = _archetype.shapeListName;
+				const float _visionRadius = _archetype.visionRadius;
+				const int _shootDelay = _archetype.shootDelay;
+
 				if (_shapeListNameHasChanged)
 				{
 					_shapeListNameHasChanged = false;
@@ -57,6 +61,13 @@ namespace engine
 				}
 			}
 
+			void Enemy::setArchetype(const Archetype& archetype)
+			{
+				_archetype = archetype;
+				_shapeListNameHasChanged = true;
+			}
+
+			/*
 			void Enemy::setArchetypeName(const std::string &archetypeName)
 			{
 				std::stringstream filename;
@@ -89,7 +100,7 @@ namespace engine
 					std::cerr << "Error description: " << result.description() << std::endl;
 					std::cerr << "Error offset: " << result.offset << std::endl;
 				}
-			}
+			}*/
 		}
 	}
 }
