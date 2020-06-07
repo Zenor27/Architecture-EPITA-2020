@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<archetype>
+	<shapelist>test</shapelist>
+	<vision_radius>4.2</vision_radius>
+	<shoot_delay>42</shoot_delay>
+</archetype>
